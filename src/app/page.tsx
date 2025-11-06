@@ -125,6 +125,19 @@ export default function Home() {
     if (!validate()) return;
     try {
       setLoading(true);
+      // Envia webhook de ação Cadastrar com dados atuais do formulário
+      void fetch("/api/webhook", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          categoria: "Cadastrar",
+          data: {
+            ...form,
+            search,
+            timestamp: new Date().toISOString(),
+          },
+        }),
+      });
       const payload = { ...form };
       let res: Response;
       if (editingId) {
@@ -185,6 +198,19 @@ export default function Home() {
   }
 
   function clearForm() {
+    // Envia webhook de ação Limpar com dados atuais do formulário
+    void fetch("/api/webhook", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        categoria: "Limpar",
+        data: {
+          ...form,
+          search,
+          timestamp: new Date().toISOString(),
+        },
+      }),
+    });
     setForm(initialForm);
     setEditingId(null);
     setErrors({});
@@ -221,7 +247,7 @@ export default function Home() {
         <div className="flex items-center justify-start">
           <div>
             <h1 className="text-2xl font-semibold text-black dark:text-white">Cadastro de Candidatos</h1>
-            <p className="text-zinc-600 dark:text-zinc-400 mt-1">Insira, visualize, edite e exclua candidatos.</p>
+            <p className="text-zinc-600 dark:text-zinc-400 mt-1">Insira, visualize e exclua candidatos.</p>
           </div>
         </div>
         <section className="rounded-2xl shadow border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6">
@@ -346,18 +372,30 @@ export default function Home() {
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={refresh}
+                onClick={async () => {
+                  // Envia webhook de ação Buscar com dados atuais e termo de busca
+                  try {
+                    await fetch("/api/webhook", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        categoria: "Buscar",
+                        data: {
+                          ...form,
+                          search,
+                          timestamp: new Date().toISOString(),
+                        },
+                      }),
+                    });
+                  } catch (err) {
+                    // Ignora erro de webhook para não afetar UX da busca
+                  }
+                  refresh();
+                }}
                 disabled={loadingList}
                 className="rounded-lg px-4 py-2 font-medium border transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900 disabled:cursor-not-allowed"
               >
-                {loadingList ? "Atualizando..." : "Atualizar"}
-              </button>
-              <button
-                type="button"
-                onClick={exportCSV}
-                className="rounded-lg px-4 py-2 font-medium bg-black text-white transition-colors hover:bg-zinc-900"
-              >
-                Exportar CSV
+                {loadingList ? "Buscando..." : "Buscar"}
               </button>
             </div>
           </div>
