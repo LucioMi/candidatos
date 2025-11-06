@@ -64,6 +64,8 @@ export default function Home() {
   const [toast, setToast] = useState<Toast>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [dialogMessage, setDialogMessage] = useState<string>("");
 
   useEffect(() => {
     refresh();
@@ -201,6 +203,9 @@ export default function Home() {
       setForm(initialForm);
       setEditingId(null);
       setErrors({});
+      // Exibe caixa de diálogo de sucesso imediatamente
+      setDialogMessage("Obrigado! Cadastro completo.");
+      setDialogOpen(true);
       // Dispara webhook e inicia polling por confirmação do n8n
       await triggerWebhook("Cadastrar");
       let res: Response;
@@ -308,6 +313,24 @@ export default function Home() {
             <p className="text-zinc-600 dark:text-zinc-400 mt-1">Insira, visualize e exclua candidatos.</p>
           </div>
         </div>
+        {dialogOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/50" onClick={() => setDialogOpen(false)} />
+            <div className="relative z-10 w-full max-w-md rounded-2xl bg-white dark:bg-zinc-950 shadow-xl border border-zinc-200 dark:border-zinc-800 p-6">
+              <h2 className="text-lg font-semibold text-black dark:text-white">Obrigado!</h2>
+              <p className="mt-2 text-zinc-700 dark:text-zinc-300">{dialogMessage}</p>
+              <div className="mt-4 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setDialogOpen(false)}
+                  className="rounded-lg px-4 py-2 font-medium border transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                >
+                  Fechar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         <section className="rounded-2xl shadow border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6">
 
           {toast && (
