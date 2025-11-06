@@ -143,7 +143,20 @@ export default function Home() {
   }
 
   function normalizeCandidates(input: any): Candidate[] {
-    const raw = Array.isArray(input) ? input : input?.items || [];
+    // Tenta extrair lista de candidatos de diferentes formatos comuns de payload
+    const candidateArray = [
+      input,
+      input?.items,
+      input?.data,
+      input?.data?.items,
+      input?.result,
+      input?.result?.items,
+      input?.rows,
+      input?.records,
+      input?.hits,
+      input?.list,
+    ].find((v) => Array.isArray(v)) as any[] | undefined;
+    const raw = Array.isArray(candidateArray) ? candidateArray : [];
     if (!Array.isArray(raw)) return [];
     return raw.map((c: any) => ({
       id: c?.id ?? undefined,
@@ -322,6 +335,9 @@ export default function Home() {
               <h2 className="text-lg font-semibold text-black dark:text-white">{dialogTitle || "Mensagem"}</h2>
               {dialogMessage && (
                 <p className="mt-2 text-zinc-700 dark:text-zinc-300">{dialogMessage}</p>
+              )}
+              {dialogResults.length === 0 && !dialogMessage && (
+                <p className="mt-2 text-zinc-700 dark:text-zinc-300">Nenhum resultado encontrado.</p>
               )}
               {dialogResults.length > 0 && (
                 <div className="mt-4 max-h-64 overflow-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
