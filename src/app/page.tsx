@@ -194,7 +194,13 @@ export default function Home() {
       showToast({ type: "success", message: editingId ? "Alterações salvas" : "Cadastrado com sucesso" });
       setForm(initialForm);
       setEditingId(null);
-      await refresh();
+      setErrors({});
+      // Atualiza a lista sem sobrescrever o toast de sucesso em caso de falha
+      try {
+        await refresh();
+      } catch (_) {
+        // Silencia erro de atualização de lista para manter a confirmação de sucesso
+      }
     } catch (err: any) {
       showToast({ type: "error", message: err?.message || "Erro inesperado" });
     } finally {
