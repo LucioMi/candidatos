@@ -11,11 +11,12 @@ function getConfig() {
   return { baseUrl, token };
 }
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await context.params;
     const body = await req.json();
     const { baseUrl, token } = getConfig();
-    const payload = { ...body, id: params.id };
+    const payload = { ...body, id };
     const res = await fetch(`${baseUrl}/webhook/candidates.update`, {
       method: 'PUT',
       headers: {
@@ -36,8 +37,9 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_req: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await context.params;
     const { baseUrl, token } = getConfig();
     const res = await fetch(`${baseUrl}/webhook/candidates.delete`, {
       method: 'DELETE',
@@ -45,7 +47,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
         'Content-Type': 'application/json',
         'X-API-KEY': token,
       },
-      body: JSON.stringify({ id: params.id }),
+      body: JSON.stringify({ id }),
       cache: 'no-store',
     });
     if (!res.ok) {
