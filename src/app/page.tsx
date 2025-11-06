@@ -500,6 +500,8 @@ export default function Home() {
               placeholder="Buscar por e-mail..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              name="searchEmail"
+              autoComplete="off"
               className="w-full sm:w-2/3 rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white dark:bg-zinc-900 dark:text-white"
             />
             <div className="flex items-center gap-2">
@@ -602,6 +604,8 @@ export default function Home() {
               placeholder="E-mail para limpar..."
               value={clearEmail}
               onChange={(e) => setClearEmail(e.target.value)}
+              name="clearEmail"
+              autoComplete="email"
               className="w-full sm:w-2/3 rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white dark:bg-zinc-900 dark:text-white"
             />
             <div className="flex items-center gap-2">
@@ -613,6 +617,10 @@ export default function Home() {
                     setForm(initialForm);
                     setEditingId(null);
                     setErrors({});
+                    // Limpa campos de busca e e-mail da seção de limpeza
+                    setSearch("");
+                    setDialogResults([]);
+                    setClearEmail("");
                     if (!emailRegex.test(clearEmail.trim())) {
                       showToast({ type: "error", message: "Informe um e-mail válido" });
                       return;
@@ -623,11 +631,7 @@ export default function Home() {
                     // Dispara webhook de limpar com o e-mail informado
                     const payload = { email: clearEmail.trim(), timestamp: new Date().toISOString() };
                     const resp = await triggerWebhook("Limpar", undefined, payload);
-                    if (resp && resp.ok) {
-                      setClearEmail("");
-                      // Opcionalmente, atualiza a lista
-                      try { await refresh(); } catch {}
-                    } else {
+                    if (resp && !resp.ok) {
                       showToast({ type: "error", message: resp?.error || "Falha ao solicitar limpeza" });
                     }
                   } catch (err: any) {
