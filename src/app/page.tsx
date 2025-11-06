@@ -66,6 +66,8 @@ export default function Home() {
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [dialogMessage, setDialogMessage] = useState<string>("");
+  const [dialogTitle, setDialogTitle] = useState<string>("");
+  const [dialogResults, setDialogResults] = useState<Candidate[]>([]);
   const [clearEmail, setClearEmail] = useState<string>("");
 
   useEffect(() => {
@@ -202,7 +204,9 @@ export default function Home() {
       setEditingId(null);
       setErrors({});
       // Exibe caixa de diálogo de sucesso imediatamente
-      setDialogMessage("Obrigado! Cadastro completo.");
+      setDialogTitle("Obrigado!");
+      setDialogMessage("Cadastro completo.");
+      setDialogResults([]);
       setDialogOpen(true);
       // Dispara webhook e inicia polling por confirmação do n8n
       await triggerWebhook("Cadastrar");
@@ -315,8 +319,34 @@ export default function Home() {
           <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/50" onClick={() => setDialogOpen(false)} />
             <div className="relative z-10 w-full max-w-md rounded-2xl bg-white dark:bg-zinc-950 shadow-xl border border-zinc-200 dark:border-zinc-800 p-6">
-              <h2 className="text-lg font-semibold text-black dark:text-white">Obrigado!</h2>
-              <p className="mt-2 text-zinc-700 dark:text-zinc-300">{dialogMessage}</p>
+              <h2 className="text-lg font-semibold text-black dark:text-white">{dialogTitle || "Mensagem"}</h2>
+              {dialogMessage && (
+                <p className="mt-2 text-zinc-700 dark:text-zinc-300">{dialogMessage}</p>
+              )}
+              {dialogResults.length > 0 && (
+                <div className="mt-4 max-h-64 overflow-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
+                  <table className="min-w-full text-left text-sm">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="py-2 px-3">Nome</th>
+                        <th className="py-2 px-3">E-mail</th>
+                        <th className="py-2 px-3">Telefone</th>
+                        <th className="py-2 px-3">Área</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {dialogResults.map((c) => (
+                        <tr key={c.id || `${c.email}-${c.nome_completo}`} className="border-b">
+                          <td className="py-2 px-3">{c.nome_completo || "-"}</td>
+                          <td className="py-2 px-3">{c.email || "-"}</td>
+                          <td className="py-2 px-3">{c.telefone || "-"}</td>
+                          <td className="py-2 px-3">{c.area_interesse || "-"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
               <div className="mt-4 flex justify-end">
                 <button
                   type="button"
@@ -454,11 +484,19 @@ export default function Home() {
                     const resp = await triggerWebhook("Buscar", (data) => {
                       const items = normalizeCandidates(data);
                       setList(items);
+                      setDialogTitle("Resultados da busca");
+                      setDialogMessage("");
+                      setDialogResults(items);
+                      setDialogOpen(true);
                     });
                     if (resp && resp.ok) {
                       const items = normalizeCandidates(resp.data);
                       setList(items);
                       showToast({ type: "success", message: "Busca realizada com sucesso" });
+                      setDialogTitle("Resultados da busca");
+                      setDialogMessage("");
+                      setDialogResults(items);
+                      setDialogOpen(true);
                     } else if (resp && resp.error) {
                       showToast({ type: "error", message: resp.error || "Falha ao buscar via webhook" });
                     } else {
