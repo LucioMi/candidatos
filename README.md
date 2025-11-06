@@ -1,47 +1,97 @@
-# Cadastro de Candidatos — Next.js + Tailwind
+# Cadastro de Candidatos — Next.js + Tailwind + n8n
 
-Aplicativo simples para cadastrar, visualizar, editar e excluir candidatos. Front-end em Next.js (App Router) consumindo webhooks do n8n via rotas de API internas (proxy). Dados persistidos em Google Sheets pelo n8n.
+Aplicativo para cadastrar, buscar e limpar candidatos com UX baseada em modais. O front-end (Next.js + Tailwind) integra com um fluxo no n8n via webhooks e rotas internas (proxy). A persistência é feita em Google Sheets pelo n8n.
 
-## Setup
+## Visão Geral
 
-1) Instalação local
+- Interface simples para:
+  - `Cadastrar`: limpa o formulário imediatamente e exibe um modal de agradecimento.
+  - `Buscar`: busca por e-mail, abre um modal com os resultados (tabela) e atualiza a lista.
+  - `Limpar`: seção separada com e-mail; exibe um modal “Apagado com sucesso” e solicita a remoção no n8n.
+- Integração com n8n via `POST /api/webhook`; resposta imediata do n8n alimenta a UI. Polling opcional via callback.
+- Normalização de dados robusta para diferentes formatos de resposta do n8n e colunas do Google Sheets em português.
+
+## Instalação
 
 - Requisitos: Node.js 18+.
-- Instale dependências: `npm install`
-- Execute dev: `npm run dev` e acesse `http://localhost:3000`
+- Instalação: `npm install`
+- Dev: `npm run dev` e acessar `http://localhost:3000`
 
-2) Variáveis de ambiente (Vercel)
+## Variáveis de Ambiente
 
-Crie as variáveis no projeto na Vercel:
-
-- `N8N_BASE_URL` = `https://SEU-N8N.com`
-- `N8N_TOKEN` = `xxxx`
-
-Opcionalmente, crie um `.env.local` com:
+Em Vercel ou `.env.local`:
 
 ```
 N8N_BASE_URL=https://SEU-N8N.com
 N8N_TOKEN=xxxx
 ```
 
-3) Webhooks no n8n
+## Endpoints Internos (Proxy)
 
-Verifique os 4 webhooks (todos validam header `X-API-KEY`):
+- `GET /api/candidates` → `GET {N8N_BASE_URL}/webhook/candidates.list`
+- `POST /api/candidates` → `POST {N8N_BASE_URL}/webhook/candidates.create`
+- `PUT /api/candidates/[id]` → `PUT {N8N_BASE_URL}/webhook/candidates.update`
+- `DELETE /api/candidates/[id]` → `DELETE {N8N_BASE_URL}/webhook/candidates.delete`
+- Todas as chamadas enviam `X-API-KEY: N8N_TOKEN`.
 
-- `GET /webhook/candidates.list`
-- `POST /webhook/candidates.create`
-- `PUT /webhook/candidates.update`
-- `DELETE /webhook/candidates.delete`
+## Webhook Principal e Callback
 
-## Arquitetura
+- `POST /api/webhook` envia para o endpoint externo do fluxo n8n com o corpo:
+  - `{ categoria: "Cadastrar" | "Buscar" | "Limpar", data: { ...campos }, requestId }`
+  - Exemplo de corpo em `Buscar`: `{ categoria: "Buscar", data: { search: "email@dominio.com", timestamp: "..." }, requestId }`
+- Resposta imediata do n8n é usada para abrir o modal de resultados.
+- `GET /api/webhook/status?requestId=...` faz polling do status armazenado em memória.
+- `POST /api/webhook/callback` (opcional no n8n): enviar `{ requestId, status: "success" | "error", data }` para confirmar assíncrono.
 
-- Next.js 14+ com App Router (`src/app/`), TypeScript e Tailwind.
-- Rotas internas (proxy) que chamam os webhooks do n8n sem expor as URLs reais no cliente:
-  - `GET /api/candidates` → `GET {N8N_BASE_URL}/webhook/candidates.list`
-  - `POST /api/candidates` → `POST {N8N_BASE_URL}/webhook/candidates.create`
-  - `PUT /api/candidates/[id]` → `PUT {N8N_BASE_URL}/webhook/candidates.update` (body inclui `id`)
-  - `DELETE /api/candidates/[id]` → `DELETE {N8N_BASE_URL}/webhook/candidates.delete` (body `{ id }`)
-- Todas as chamadas enviam header `X-API-KEY: N8N_TOKEN`.
+## Funcionalidades e UX
+
+- `Cadastrar`
+  - Valida campos, limpa o formulário imediatamente e abre modal “Obrigado! Cadastro completo”.
+  - Dispara webhook “Cadastrar” e registra no Google Sheets via n8n.
+  - Atualiza a lista após a operação.
+- `Buscar` (apenas por e-mail)
+  - Campo de busca aceita e-mail; botão `Buscar` abre modal “Resultados da busca”.
+  - Modal exibe tabela com `Nome`, `E-mail`, `Telefone`, `Área` com fallbacks `-` quando vazio.
+  - Resposta imediata do n8n (Respond to Webhook) e, opcionalmente, callback preenchem o modal.
+- `Limpar`
+  - Seção com campo “E-mail para limpar...” e botão `Limpar`.
+  - Mostra modal “Apagado com sucesso” e solicita remoção ao n8n.
+
+## Normalização de Dados
+
+- O sistema aceita arrays em diferentes chaves comuns do n8n: `data`, `data.items`, `items`, `result`, `result.items`, `rows`, `records`, `hits`, `list`.
+- Mapeamento de colunas do Google Sheets para o formato interno:
+  - `nome_completo` ← `nome_completo` | `nome` | `"Nome completo"`
+  - `email` ← `email` | `"E-mail"`
+  - `telefone` ← `telefone` | `"Telefone"`
+  - `area_interesse` ← `area_interesse` | `area` | `"Área de interesse"`
+  - `data_cadastro` ← `data_cadastro` | `"Data de cadastro"`
+- Limpeza de espaços em branco: strings como `" "` são tratadas como vazias; escolhemos o primeiro valor realmente preenchido.
+
+## Fluxo n8n (Resumo)
+
+- Webhook Node: caminho `candidados` (manter igual no front e no n8n).
+- Switch por `categoria`:
+  - `Cadastrar` → Append/Update no Google Sheets → Respond to Webhook.
+  - `Buscar` → Get rows filtrando `E-mail == $json.body.data.search` → Respond to Webhook.
+  - `Limpar` → Get row(s) por `E-mail` → Clear sheet (linha) → Respond to Webhook.
+- Opcional: adicionar HTTP Request ao final para `POST /api/webhook/callback` com `{ requestId, status: "success", data }`.
+
+## Dicas e Solução de Problemas
+
+- Modal vazio na busca:
+  - Verifique se o e-mail buscado existe exatamente no Sheets.
+  - Garanta que o n8n responde um array ou `items` com colunas esperadas.
+- Endpoint externo:
+  - Certifique-se de que o caminho do webhook no n8n e no front é idêntico (`candidados`).
+- Callback opcional:
+  - Se desejar confirmação assíncrona/polling, implemente o `POST /api/webhook/callback` no fluxo n8n.
+
+## Scripts
+
+- `npm run dev`: executa o servidor de desenvolvimento.
+- `npm run build`: build de produção.
+- `npm start`: serve a build.
 - GET sem cache (força `no-store`).
 
 ## Como usar
