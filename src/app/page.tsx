@@ -484,9 +484,12 @@ export default function Home() {
                   loading ? "bg-zinc-800/70 border-zinc-800" : "bg-black hover:bg-zinc-900 border-black dark:border-white"
                 } disabled:cursor-not-allowed`}
               >
-                {loading ? (editingId ? "Salvando..." : "Cadastrando...") : editingId ? "Salvar alterações" : "Cadastrar"}
+                {loading ? (editingId ? "Salvando..." : "Cadastrando...") : "Cadastrar / Atualizar"}
               </button>
             </div>
+            <p className="text-xs text-zinc-600 mt-2">
+              O e-mail é usado para fazer o match; ele funciona como um ID.
+            </p>
           </form>
         </section>
 
