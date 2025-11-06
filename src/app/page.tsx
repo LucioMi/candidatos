@@ -143,7 +143,7 @@ export default function Home() {
   }
 
   function normalizeCandidates(input: any): Candidate[] {
-    // Tenta extrair lista de candidatos de diferentes formatos comuns de payload
+    // Extrai array de diferentes formatos comuns
     const candidateArray = [
       input,
       input?.items,
@@ -158,15 +158,28 @@ export default function Home() {
     ].find((v) => Array.isArray(v)) as any[] | undefined;
     const raw = Array.isArray(candidateArray) ? candidateArray : [];
     if (!Array.isArray(raw)) return [];
+
+    // Utilitários para limpar espaços e escolher primeiro valor não vazio
+    const clean = (v: any) => (typeof v === "string" ? v.trim() : v);
+    const pick = (...vals: any[]) => {
+      for (const v of vals) {
+        const s = clean(v);
+        if (s !== undefined && s !== null && !(typeof s === "string" && s.length === 0)) {
+          return s;
+        }
+      }
+      return undefined;
+    };
+
     return raw.map((c: any) => ({
-      id: c?.id ?? undefined,
-      nome_completo: c?.nome_completo ?? c?.nome ?? "",
-      email: c?.email ?? "",
-      telefone: c?.telefone ?? "",
-      area_interesse: c?.area_interesse ?? c?.area ?? "",
-      data_cadastro: c?.data_cadastro ?? today(),
-      created_at: c?.created_at ?? undefined,
-      updated_at: c?.updated_at ?? undefined,
+      id: pick(c?.id, c?.row_number),
+      nome_completo: pick(c?.nome_completo, c?.nome, c?.["Nome completo"]) ?? "",
+      email: pick(c?.email, c?.["E-mail"]) ?? "",
+      telefone: pick(c?.telefone, c?.["Telefone"]) ?? "",
+      area_interesse: pick(c?.area_interesse, c?.area, c?.["Área de interesse"]) ?? "",
+      data_cadastro: pick(c?.data_cadastro, c?.["Data de cadastro"]) ?? today(),
+      created_at: clean(c?.created_at) ?? undefined,
+      updated_at: clean(c?.updated_at) ?? undefined,
     }));
   }
 

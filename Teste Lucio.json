@@ -1,0 +1,515 @@
+{
+  "name": "Teste Lucio",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "candidados",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -48,
+        16
+      ],
+      "id": "f2df3f01-89fb-4cb7-be47-190098c071dd",
+      "name": "Webhook",
+      "webhookId": "c4f6808e-c045-4f56-9023-2f598d5e9103"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.categoria }}",
+                    "rightValue": "Cadastrar",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "bce2bcb4-5b76-4ce9-b363-0659352d82a0"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Cadastrar"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "a827c741-6072-474d-b006-095c7f393531",
+                    "leftValue": "={{ $json.body.categoria }}",
+                    "rightValue": "Limpar",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Limpar"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ca14a05d-149e-4c22-83ce-511ce6941ef8",
+                    "leftValue": "={{ $json.body.categoria }}",
+                    "rightValue": "Buscar",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Buscar"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        192,
+        0
+      ],
+      "id": "ecc67b17-a8c4-466a-b87f-3b8c56717b2d",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1P_rLb6lybRVztZKAmRDXIh5djtCgJxJYbJ-gNgo8Un4",
+          "mode": "list",
+          "cachedResultName": "candidatos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1P_rLb6lybRVztZKAmRDXIh5djtCgJxJYbJ-gNgo8Un4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1P_rLb6lybRVztZKAmRDXIh5djtCgJxJYbJ-gNgo8Un4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Nome completo": "={{ $json.body.data.nome_completo }}",
+            "E-mail": "={{ $json.body.data.email }}",
+            "Telefone": "={{ $json.body.data.telefone }}",
+            "Área de interesse": "={{ $json.body.data.area_interesse }}",
+            "Data de cadastro": "={{ $json.body.data.data_cadastro }}"
+          },
+          "matchingColumns": [
+            "Nome completo"
+          ],
+          "schema": [
+            {
+              "id": "Nome completo",
+              "displayName": "Nome completo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "E-mail",
+              "displayName": "E-mail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Telefone",
+              "displayName": "Telefone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Área de interesse",
+              "displayName": "Área de interesse",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Data de cadastro",
+              "displayName": "Data de cadastro",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        560,
+        -192
+      ],
+      "id": "5e76ea5d-9a76-434a-930c-d89041046aab",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "oXIqiK7coXy6QkYH",
+          "name": "Google Sheets - Lucio"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        992,
+        16
+      ],
+      "id": "8ad5c39a-dc95-4da2-b7f1-9e16610046ad",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1P_rLb6lybRVztZKAmRDXIh5djtCgJxJYbJ-gNgo8Un4",
+          "mode": "list",
+          "cachedResultName": "candidatos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1P_rLb6lybRVztZKAmRDXIh5djtCgJxJYbJ-gNgo8Un4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1P_rLb6lybRVztZKAmRDXIh5djtCgJxJYbJ-gNgo8Un4/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "E-mail",
+              "lookupValue": "={{ $json.body.data.search }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        560,
+        208
+      ],
+      "id": "61e9104e-b5f2-470d-bcf5-a564689c61e5",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "oXIqiK7coXy6QkYH",
+          "name": "Google Sheets - Lucio"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "clear",
+        "documentId": {
+          "__rl": true,
+          "value": "1P_rLb6lybRVztZKAmRDXIh5djtCgJxJYbJ-gNgo8Un4",
+          "mode": "list",
+          "cachedResultName": "candidatos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1P_rLb6lybRVztZKAmRDXIh5djtCgJxJYbJ-gNgo8Un4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1P_rLb6lybRVztZKAmRDXIh5djtCgJxJYbJ-gNgo8Un4/edit#gid=0"
+        },
+        "clear": "specificRows",
+        "startIndex": "={{ $json.row_number }}"
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        672,
+        16
+      ],
+      "id": "779c9c37-f6a3-4bd3-8b78-82a362b35428",
+      "name": "Clear sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "oXIqiK7coXy6QkYH",
+          "name": "Google Sheets - Lucio"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1P_rLb6lybRVztZKAmRDXIh5djtCgJxJYbJ-gNgo8Un4",
+          "mode": "list",
+          "cachedResultName": "candidatos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1P_rLb6lybRVztZKAmRDXIh5djtCgJxJYbJ-gNgo8Un4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1P_rLb6lybRVztZKAmRDXIh5djtCgJxJYbJ-gNgo8Un4/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "E-mail",
+              "lookupValue": "={{ $json.body.data.email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        16
+      ],
+      "id": "f27ceb54-669c-42b8-a3d4-56ad1f0f4fc6",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "oXIqiK7coXy6QkYH",
+          "name": "Google Sheets - Lucio"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "webhook.rexusaigency.com",
+            "user-agent": "node",
+            "content-length": "301",
+            "accept": "*/*",
+            "accept-encoding": "br, gzip, deflate",
+            "accept-language": "*",
+            "cache-control": "no-cache",
+            "content-type": "application/json",
+            "pragma": "no-cache",
+            "sec-fetch-mode": "cors",
+            "x-forwarded-for": "54.221.15.42",
+            "x-forwarded-host": "webhook.rexusaigency.com",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "6acb244856e7",
+            "x-real-ip": "54.221.15.42",
+            "x-vercel-id": "gru1::26mt8-1762469818529-dc1e82bad6fd"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "categoria": "Limpar",
+            "data": {
+              "nome_completo": "Lúcio Henrique Pereira Da Silva",
+              "email": "luciohenrick@gmail.com",
+              "telefone": "(31) 99969-2838",
+              "area_interesse": "Vendas",
+              "data_cadastro": "2025-11-06",
+              "search": "",
+              "timestamp": "2025-11-06T22:56:58.492Z"
+            },
+            "requestId": "11dabd66-8b47-4203-a904-764f86e29702"
+          },
+          "webhookUrl": "https://webhook.rexusaigency.com/webhook/candidados",
+          "executionMode": "production"
+        }
+      }
+    ],
+    "Respond to Webhook": [
+      {
+        "json": {
+          "row_number": 2,
+          "Nome completo": " ",
+          "E-mail": "luciohenrick@gmail.com",
+          "Telefone": " ",
+          "Área de interesse": " ",
+          "Data de cadastro": " "
+        }
+      }
+    ],
+    "Clear sheet": [
+      {
+        "json": {
+          "row_number": 2,
+          "Nome completo": " ",
+          "E-mail": "luciohenrick@gmail.com",
+          "Telefone": " ",
+          "Área de interesse": " ",
+          "Data de cadastro": " "
+        }
+      }
+    ],
+    "Get row(s) in sheet1": [
+      {
+        "json": {
+          "row_number": 2,
+          "Nome completo": " ",
+          "E-mail": "luciohenrick@gmail.com",
+          "Telefone": " ",
+          "Área de interesse": " ",
+          "Data de cadastro": " "
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clear sheet": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Clear sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3e46cde2-02d8-4f5a-a74d-488c63b8ed8f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b9c51ed3556406cfbc3ffe5604b6b6574a57216a904b28fe7d99fac0a67a9bed"
+  },
+  "id": "zz6JPYMM95UPXvxL",
+  "tags": []
+}
