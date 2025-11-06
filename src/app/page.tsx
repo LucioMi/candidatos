@@ -66,6 +66,7 @@ export default function Home() {
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [dialogMessage, setDialogMessage] = useState<string>("");
+  const [clearEmail, setClearEmail] = useState<string>("");
 
   useEffect(() => {
     refresh();
@@ -75,11 +76,7 @@ export default function Home() {
   const listFiltered = useMemo(() => {
     const term = search.trim().toLowerCase();
     if (!term) return list;
-    return list.filter(
-      (c) =>
-        c.nome_completo.toLowerCase().includes(term) ||
-        c.email.toLowerCase().includes(term)
-    );
+    return list.filter((c) => c.email.toLowerCase().includes(term));
   }, [list, search]);
 
   function showToast(next: Toast) {
@@ -89,7 +86,8 @@ export default function Home() {
 
   async function triggerWebhook(
     categoria: "Cadastrar" | "Limpar" | "Buscar",
-    onData?: (data: any) => void
+    onData?: (data: any) => void,
+    payloadOverride?: any
   ) {
     try {
       const res = await fetch("/api/webhook", {
@@ -97,7 +95,7 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           categoria,
-          data: {
+          data: payloadOverride ?? {
             ...form,
             search,
             timestamp: new Date().toISOString(),
@@ -429,14 +427,6 @@ export default function Home() {
               >
                 {loading ? (editingId ? "Salvando..." : "Cadastrando...") : editingId ? "Salvar alterações" : "Cadastrar"}
               </button>
-              <button
-                type="button"
-                onClick={clearForm}
-                disabled={loading}
-                className="rounded-lg px-4 py-2 font-medium border transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900 disabled:cursor-not-allowed"
-              >
-                Limpar
-              </button>
             </div>
           </form>
         </section>
@@ -445,7 +435,7 @@ export default function Home() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <input
               type="text"
-              placeholder="Buscar por nome ou e-mail..."
+              placeholder="Buscar por e-mail..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full sm:w-2/3 rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white dark:bg-zinc-900 dark:text-white"
@@ -532,6 +522,51 @@ export default function Home() {
                 </tbody>
               </table>
             )}
+          </div>
+        </section>
+
+        <section className="rounded-2xl shadow border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <input
+              type="email"
+              placeholder="E-mail para limpar..."
+              value={clearEmail}
+              onChange={(e) => setClearEmail(e.target.value)}
+              className="w-full sm:w-2/3 rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white dark:bg-zinc-900 dark:text-white"
+            />
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    // Limpa o formulário da tela sempre ao clicar
+                    setForm(initialForm);
+                    setEditingId(null);
+                    setErrors({});
+                    if (!emailRegex.test(clearEmail.trim())) {
+                      showToast({ type: "error", message: "Informe um e-mail válido" });
+                      return;
+                    }
+                    // Dispara webhook de limpar com o e-mail informado
+                    const payload = { email: clearEmail.trim(), timestamp: new Date().toISOString() };
+                    const resp = await triggerWebhook("Limpar", undefined, payload);
+                    if (resp && resp.ok) {
+                      showToast({ type: "success", message: "Limpeza solicitada com sucesso" });
+                      setClearEmail("");
+                      // Opcionalmente, atualiza a lista
+                      try { await refresh(); } catch {}
+                    } else {
+                      showToast({ type: "error", message: resp?.error || "Falha ao solicitar limpeza" });
+                    }
+                  } catch (err: any) {
+                    showToast({ type: "error", message: err?.message || "Erro ao limpar" });
+                  }
+                }}
+                className="rounded-lg px-4 py-2 font-medium border transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900"
+              >
+                Limpar por e-mail
+              </button>
+            </div>
           </div>
         </section>
 
