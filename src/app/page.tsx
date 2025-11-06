@@ -140,6 +140,21 @@ export default function Home() {
     }
   }
 
+  function normalizeCandidates(input: any): Candidate[] {
+    const raw = Array.isArray(input) ? input : input?.items || [];
+    if (!Array.isArray(raw)) return [];
+    return raw.map((c: any) => ({
+      id: c?.id ?? undefined,
+      nome_completo: c?.nome_completo ?? c?.nome ?? "",
+      email: c?.email ?? "",
+      telefone: c?.telefone ?? "",
+      area_interesse: c?.area_interesse ?? c?.area ?? "",
+      data_cadastro: c?.data_cadastro ?? today(),
+      created_at: c?.created_at ?? undefined,
+      updated_at: c?.updated_at ?? undefined,
+    }));
+  }
+
   async function refresh() {
     try {
       setLoadingList(true);
@@ -180,12 +195,17 @@ export default function Home() {
     if (!validate()) return;
     try {
       setLoading(true);
+      const payload = { ...form };
+      const currentId = editingId;
+      // Limpa o formulário imediatamente ao clicar em Cadastrar
+      setForm(initialForm);
+      setEditingId(null);
+      setErrors({});
       // Dispara webhook e inicia polling por confirmação do n8n
       await triggerWebhook("Cadastrar");
-      const payload = { ...form };
       let res: Response;
-      if (editingId) {
-        res = await fetch(`/api/candidates/${editingId}`, {
+      if (currentId) {
+        res = await fetch(`/api/candidates/${currentId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
@@ -200,9 +220,7 @@ export default function Home() {
       const json = await res.json();
       if (!json.ok) throw new Error(json.error || "Falha na operação");
       showToast({ type: "success", message: editingId ? "Alterações salvas" : "Cadastrado com sucesso" });
-      setForm(initialForm);
-      setEditingId(null);
-      setErrors({});
+      // Campos já foram limpos ao clicar
       // Atualiza a lista sem sobrescrever o toast de sucesso em caso de falha
       try {
         await refresh();
@@ -421,20 +439,13 @@ export default function Home() {
                     setEditingId(null);
                     setErrors({});
                     const resp = await triggerWebhook("Buscar", (data) => {
-                      const items: Candidate[] = Array.isArray(data)
-                        ? data
-                        : (data?.items as Candidate[]) || [];
-                      setList(items || []);
+                      const items = normalizeCandidates(data);
+                      setList(items);
                     });
                     if (resp && resp.ok) {
-                      const payload = resp.data;
-                      const items: Candidate[] = Array.isArray(payload)
-                        ? payload
-                        : (payload?.items as Candidate[]) || [];
-                      if (items && items.length >= 0) {
-                        setList(items);
-                        showToast({ type: "success", message: "Busca realizada com sucesso" });
-                      }
+                      const items = normalizeCandidates(resp.data);
+                      setList(items);
+                      showToast({ type: "success", message: "Busca realizada com sucesso" });
                     } else if (resp && resp.error) {
                       showToast({ type: "error", message: resp.error || "Falha ao buscar via webhook" });
                     } else {
@@ -469,13 +480,13 @@ export default function Home() {
                     <th className="py-2">Ações</th>
                   </tr>
                 </thead>
-                <tbody>
+              <tbody>
                   {listFiltered.map((c) => (
                     <tr key={c.id || `${c.email}-${c.nome_completo}`} className="border-b transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900">
-                      <td className="py-2 pr-2">{c.nome_completo}</td>
-                      <td className="py-2 pr-2">{c.email}</td>
-                      <td className="py-2 pr-2">{c.telefone}</td>
-                      <td className="py-2 pr-2">{c.area_interesse}</td>
+                      <td className="py-2 pr-2">{c.nome_completo || "-"}</td>
+                      <td className="py-2 pr-2">{c.email || "-"}</td>
+                      <td className="py-2 pr-2">{c.telefone || "-"}</td>
+                      <td className="py-2 pr-2">{c.area_interesse || "-"}</td>
                       <td className="py-2 pr-2">{c.data_cadastro}</td>
                       <td className="py-2 pr-2">
                         <div className="flex items-center gap-2">
