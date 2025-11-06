@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import ThemeToggle from "../components/theme-toggle";
+// Toggle removido
 
 type Candidate = {
   id?: string;
@@ -218,12 +218,11 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       <main className="max-w-3xl mx-auto p-6 space-y-8 font-sans">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-start">
           <div>
             <h1 className="text-2xl font-semibold text-black dark:text-white">Cadastro de Candidatos</h1>
             <p className="text-zinc-600 dark:text-zinc-400 mt-1">Insira, visualize, edite e exclua candidatos.</p>
           </div>
-          <ThemeToggle />
         </div>
         <section className="rounded-2xl shadow border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6">
 
