@@ -104,8 +104,10 @@ export default function Home() {
       if (requestId) {
         void pollWebhookStatus(requestId);
       }
+      return json;
     } catch (_) {
       // Ignora erros do webhook para não atrapalhar UX principal
+      return null;
     }
   }
 
@@ -404,9 +406,24 @@ export default function Home() {
               <button
                 type="button"
                 onClick={async () => {
-                  // Dispara webhook e inicia polling por confirmação do n8n
-                  void triggerWebhook("Buscar");
-                  refresh();
+                  // Dispara webhook de busca e usa a resposta para preencher a lista
+                  try {
+                    setLoadingList(true);
+                    const resp = await triggerWebhook("Buscar");
+                    if (resp && resp.ok) {
+                      const payload = resp.data;
+                      const items: Candidate[] = Array.isArray(payload)
+                        ? payload
+                        : payload?.items || [];
+                      setList(items || []);
+                    } else {
+                      showToast({ type: "error", message: "Falha ao buscar via webhook" });
+                    }
+                  } catch (err: any) {
+                    showToast({ type: "error", message: err?.message || "Erro ao buscar" });
+                  } finally {
+                    setLoadingList(false);
+                  }
                 }}
                 disabled={loadingList}
                 className="rounded-lg px-4 py-2 font-medium border transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900 disabled:cursor-not-allowed"
