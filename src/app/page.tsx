@@ -85,6 +85,53 @@ export default function Home() {
     if (next) setTimeout(() => setToast(null), 3000);
   }
 
+  async function triggerWebhook(categoria: "Cadastrar" | "Limpar" | "Buscar") {
+    try {
+      const res = await fetch("/api/webhook", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          categoria,
+          data: {
+            ...form,
+            search,
+            timestamp: new Date().toISOString(),
+          },
+        }),
+      });
+      const json = await res.json();
+      const requestId: string | undefined = json?.requestId;
+      if (requestId) {
+        void pollWebhookStatus(requestId);
+      }
+    } catch (_) {
+      // Ignora erros do webhook para não atrapalhar UX principal
+    }
+  }
+
+  async function pollWebhookStatus(requestId: string) {
+    const timeoutAt = Date.now() + 30_000; // 30s
+    let status = "pending";
+    while (Date.now() < timeoutAt && status === "pending") {
+      await new Promise((r) => setTimeout(r, 1000));
+      try {
+        const res = await fetch(`/api/webhook/status?requestId=${encodeURIComponent(requestId)}`, { cache: "no-store" });
+        const json = await res.json();
+        status = json?.status || "pending";
+        if (status === "success") {
+          showToast({ type: "success", message: "Operação confirmada pelo n8n com sucesso." });
+          return;
+        }
+        if (status === "error") {
+          showToast({ type: "error", message: json?.message || "O n8n retornou erro no processamento." });
+          return;
+        }
+      } catch (_) {
+        // Continua tentando até timeout
+      }
+    }
+  }
+
   async function refresh() {
     try {
       setLoadingList(true);
@@ -125,19 +172,8 @@ export default function Home() {
     if (!validate()) return;
     try {
       setLoading(true);
-      // Envia webhook de ação Cadastrar com dados atuais do formulário
-      void fetch("/api/webhook", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          categoria: "Cadastrar",
-          data: {
-            ...form,
-            search,
-            timestamp: new Date().toISOString(),
-          },
-        }),
-      });
+      // Dispara webhook e inicia polling por confirmação do n8n
+      await triggerWebhook("Cadastrar");
       const payload = { ...form };
       let res: Response;
       if (editingId) {
@@ -198,19 +234,8 @@ export default function Home() {
   }
 
   function clearForm() {
-    // Envia webhook de ação Limpar com dados atuais do formulário
-    void fetch("/api/webhook", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        categoria: "Limpar",
-        data: {
-          ...form,
-          search,
-          timestamp: new Date().toISOString(),
-        },
-      }),
-    });
+    // Dispara webhook e inicia polling por confirmação do n8n
+    void triggerWebhook("Limpar");
     setForm(initialForm);
     setEditingId(null);
     setErrors({});
@@ -373,23 +398,8 @@ export default function Home() {
               <button
                 type="button"
                 onClick={async () => {
-                  // Envia webhook de ação Buscar com dados atuais e termo de busca
-                  try {
-                    await fetch("/api/webhook", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({
-                        categoria: "Buscar",
-                        data: {
-                          ...form,
-                          search,
-                          timestamp: new Date().toISOString(),
-                        },
-                      }),
-                    });
-                  } catch (err) {
-                    // Ignora erro de webhook para não afetar UX da busca
-                  }
+                  // Dispara webhook e inicia polling por confirmação do n8n
+                  void triggerWebhook("Buscar");
                   refresh();
                 }}
                 disabled={loadingList}
