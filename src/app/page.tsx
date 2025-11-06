@@ -85,7 +85,10 @@ export default function Home() {
     if (next) setTimeout(() => setToast(null), 3000);
   }
 
-  async function triggerWebhook(categoria: "Cadastrar" | "Limpar" | "Buscar") {
+  async function triggerWebhook(
+    categoria: "Cadastrar" | "Limpar" | "Buscar",
+    onData?: (data: any) => void
+  ) {
     try {
       const res = await fetch("/api/webhook", {
         method: "POST",
@@ -102,7 +105,7 @@ export default function Home() {
       const json = await res.json();
       const requestId: string | undefined = json?.requestId;
       if (requestId) {
-        void pollWebhookStatus(requestId);
+        void pollWebhookStatus(requestId, onData);
       }
       return json;
     } catch (_) {
@@ -111,7 +114,7 @@ export default function Home() {
     }
   }
 
-  async function pollWebhookStatus(requestId: string) {
+  async function pollWebhookStatus(requestId: string, onData?: (data: any) => void) {
     const timeoutAt = Date.now() + 30_000; // 30s
     let status = "pending";
     while (Date.now() < timeoutAt && status === "pending") {
@@ -122,6 +125,9 @@ export default function Home() {
         status = json?.status || "pending";
         if (status === "success") {
           showToast({ type: "success", message: "Operação confirmada pelo n8n com sucesso." });
+          if (onData && json?.data !== undefined) {
+            onData(json.data);
+          }
           return;
         }
         if (status === "error") {
@@ -247,6 +253,7 @@ export default function Home() {
     setForm(initialForm);
     setEditingId(null);
     setErrors({});
+    showToast({ type: "success", message: "Formulário limpo com sucesso" });
   }
 
   function onChange<K extends keyof Candidate>(key: K, value: Candidate[K]) {
@@ -409,13 +416,27 @@ export default function Home() {
                   // Dispara webhook de busca e usa a resposta para preencher a lista
                   try {
                     setLoadingList(true);
-                    const resp = await triggerWebhook("Buscar");
+                    // Limpa o formulário ao clicar em Buscar
+                    setForm(initialForm);
+                    setEditingId(null);
+                    setErrors({});
+                    const resp = await triggerWebhook("Buscar", (data) => {
+                      const items: Candidate[] = Array.isArray(data)
+                        ? data
+                        : (data?.items as Candidate[]) || [];
+                      setList(items || []);
+                    });
                     if (resp && resp.ok) {
                       const payload = resp.data;
                       const items: Candidate[] = Array.isArray(payload)
                         ? payload
-                        : payload?.items || [];
-                      setList(items || []);
+                        : (payload?.items as Candidate[]) || [];
+                      if (items && items.length >= 0) {
+                        setList(items);
+                        showToast({ type: "success", message: "Busca realizada com sucesso" });
+                      }
+                    } else if (resp && resp.error) {
+                      showToast({ type: "error", message: resp.error || "Falha ao buscar via webhook" });
                     } else {
                       showToast({ type: "error", message: "Falha ao buscar via webhook" });
                     }
