@@ -421,8 +421,8 @@ export default function Home() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`rounded-lg px-4 py-2 font-medium text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black dark:focus-visible:ring-white ${
-                  loading ? "bg-zinc-800/70" : "bg-black hover:bg-zinc-900"
+                className={`rounded-lg px-4 py-2 font-medium text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black dark:focus-visible:ring-white border ${
+                  loading ? "bg-zinc-800/70 border-zinc-800" : "bg-black hover:bg-zinc-900 border-black dark:border-white"
                 } disabled:cursor-not-allowed`}
               >
                 {loading ? (editingId ? "Salvando..." : "Cadastrando...") : editingId ? "Salvar alterações" : "Cadastrar"}
@@ -547,11 +547,13 @@ export default function Home() {
                       showToast({ type: "error", message: "Informe um e-mail válido" });
                       return;
                     }
+                    // Exibe caixa de diálogo imediatamente ao clicar
+                    setDialogMessage("Apagado com sucesso");
+                    setDialogOpen(true);
                     // Dispara webhook de limpar com o e-mail informado
                     const payload = { email: clearEmail.trim(), timestamp: new Date().toISOString() };
                     const resp = await triggerWebhook("Limpar", undefined, payload);
                     if (resp && resp.ok) {
-                      showToast({ type: "success", message: "Limpeza solicitada com sucesso" });
                       setClearEmail("");
                       // Opcionalmente, atualiza a lista
                       try { await refresh(); } catch {}
@@ -564,7 +566,7 @@ export default function Home() {
                 }}
                 className="rounded-lg px-4 py-2 font-medium border transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900"
               >
-                Limpar por e-mail
+                Limpar
               </button>
             </div>
           </div>
