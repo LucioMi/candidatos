@@ -484,7 +484,7 @@ export default function Home() {
                   loading ? "bg-zinc-800/70 border-zinc-800" : "bg-black hover:bg-zinc-900 border-black dark:border-white"
                 } disabled:cursor-not-allowed`}
               >
-                {loading ? (editingId ? "Salvando..." : "Cadastrando...") : "Cadastrar / Atualizar"}
+                {loading ? (editingId ? "Salvando..." : "Cadastrando...") : "Cadastrar / Editar"}
               </button>
             </div>
             <p className="text-xs text-zinc-600 mt-2">
@@ -562,7 +562,9 @@ export default function Home() {
                     <th className="py-2">Telefone</th>
                     <th className="py-2">Área</th>
                     <th className="py-2">Data de cadastro</th>
-                    <th className="py-2">Ações</th>
+                    {search.trim().length === 0 && (
+                      <th className="py-2">Ações</th>
+                    )}
                   </tr>
                 </thead>
               <tbody>
@@ -573,22 +575,24 @@ export default function Home() {
                       <td className="py-2 pr-2">{c.telefone || "-"}</td>
                       <td className="py-2 pr-2">{c.area_interesse || "-"}</td>
                       <td className="py-2 pr-2">{c.data_cadastro}</td>
-                      <td className="py-2 pr-2">
-                        <div className="flex items-center gap-2">
-                          <button
-                            className="rounded-md border px-2 py-1 text-xs transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900"
-                            onClick={() => startEdit(c)}
-                          >
-                            Editar
-                          </button>
-                          <button
-                            className="rounded-md bg-red-600 text-white px-2 py-1 text-xs transition-colors hover:bg-red-700"
-                            onClick={() => setConfirmDeleteId(c.id || "")}
-                          >
-                            Excluir
-                          </button>
-                        </div>
-                      </td>
+                      {search.trim().length === 0 && (
+                        <td className="py-2 pr-2">
+                          <div className="flex items-center gap-2">
+                            <button
+                              className="rounded-md border px-2 py-1 text-xs transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                              onClick={() => startEdit(c)}
+                            >
+                              Editar
+                            </button>
+                            <button
+                              className="rounded-md bg-red-600 text-white px-2 py-1 text-xs transition-colors hover:bg-red-700"
+                              onClick={() => setConfirmDeleteId(c.id || "")}
+                            >
+                              Excluir
+                            </button>
+                          </div>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>
