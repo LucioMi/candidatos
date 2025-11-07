@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-dvh bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-dvh bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 pt-16 sm:pt-0`}
       >
         {/* Logo fixo no canto superior esquerdo */}
         <div className="fixed top-3 left-3 z-50">
