@@ -194,7 +194,17 @@ export default function Home() {
         : json.data?.items || [];
       setList(items);
     } catch (e: any) {
-      showToast({ type: "error", message: e?.message || "Erro ao buscar" });
+      const msg = String(e?.message || "");
+      // Silencia aviso repetitivo quando variáveis N8N não estão configuradas
+      if (
+        msg.includes("Variáveis de ambiente N8N_BASE_URL") ||
+        msg.includes("N8N_TOKEN")
+      ) {
+        setList([]);
+        // não exibe toast nesse caso específico
+      } else {
+        showToast({ type: "error", message: msg || "Erro ao buscar" });
+      }
     } finally {
       setLoadingList(false);
     }
