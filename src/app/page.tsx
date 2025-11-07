@@ -211,9 +211,6 @@ export default function Home() {
     if (!form.area_interesse) {
       e.area_interesse = "Selecione a área de interesse";
     }
-    if (!form.data_cadastro) {
-      e.data_cadastro = "Informe a data de cadastro";
-    }
     setErrors(e);
     return Object.keys(e).length === 0;
   }
@@ -223,7 +220,7 @@ export default function Home() {
     if (!validate()) return;
     try {
       setLoading(true);
-      const payload = { ...form };
+      const { data_cadastro, ...payload } = form;
       const currentId = editingId;
       // Limpa o formulário imediatamente ao clicar em Cadastrar
       setForm(initialForm);
@@ -462,19 +459,21 @@ export default function Home() {
               )}
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-zinc-700">Data de cadastro</label>
-              <input
-                type="date"
-                required
-                value={form.data_cadastro}
-                onChange={(e) => onChange("data_cadastro", e.target.value)}
-                className="mt-1 w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white dark:bg-zinc-900 dark:text-white"
-              />
-              {errors.data_cadastro && (
-                <p className="mt-1 text-xs text-red-600">{errors.data_cadastro}</p>
-              )}
-            </div>
+            {false && (
+              <div>
+                <label className="block text-sm font-medium text-zinc-700">Data de cadastro</label>
+                <input
+                  type="date"
+                  required
+                  value={form.data_cadastro}
+                  onChange={(e) => onChange("data_cadastro", e.target.value)}
+                  className="mt-1 w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white dark:bg-zinc-900 dark:text-white"
+                />
+                {errors.data_cadastro && (
+                  <p className="mt-1 text-xs text-red-600">{errors.data_cadastro}</p>
+                )}
+              </div>
+            )}
 
             <div className="flex items-center gap-3 pt-2">
               <button
