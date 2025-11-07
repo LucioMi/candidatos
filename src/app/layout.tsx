@@ -28,12 +28,6 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-dvh bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 pt-16 sm:pt-0`}
       >
-        {/* Logo fixo no canto superior esquerdo */}
-        <div className="fixed top-3 left-1/2 -translate-x-1/2 sm:left-3 sm:translate-x-0 z-50">
-          <div className="neon-card rounded-lg bg-white/80 dark:bg-zinc-900/80 backdrop-blur px-3 py-1">
-            <span className="rainbow-text text-sm font-extrabold tracking-wide">Desafio - Lucio</span>
-          </div>
-        </div>
         <Providers>{children}</Providers>
       </body>
     </html>
