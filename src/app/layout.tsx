@@ -30,8 +30,8 @@ export default function RootLayout({
       >
         {/* Logo fixo no canto superior esquerdo */}
         <div className="fixed top-3 left-3 z-50">
-          <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 backdrop-blur px-3 py-1 shadow-sm">
-            <span className="text-sm font-semibold text-black dark:text-white">Desafio - Lucio</span>
+          <div className="neon-card rounded-lg bg-white/80 dark:bg-zinc-900/80 backdrop-blur px-3 py-1">
+            <span className="rainbow-text text-sm font-extrabold tracking-wide">Desafio - Lucio</span>
           </div>
         </div>
         <Providers>{children}</Providers>
