@@ -49,3 +49,18 @@
       0 0 36px rgba(138, 43, 226, 0.45);
   }
 }
+
+/* Desativar animações no mobile e manter fixo/estático */
+@media (max-width: 639px) {
+  .rainbow-text {
+    animation: none;
+    background-image: none;
+    color: inherit;
+  }
+  .neon-card {
+    animation: none;
+    box-shadow: none;
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0.12);
+  }
+}
