@@ -562,7 +562,7 @@ export default function Home() {
                     <th className="py-2">Telefone</th>
                     <th className="py-2">Área</th>
                     <th className="py-2">Data de cadastro</th>
-                    {search.trim().length === 0 && (
+                    {search.trim().length === 0 && !dialogOpen && dialogResults.length === 0 && (
                       <th className="py-2">Ações</th>
                     )}
                   </tr>
@@ -575,7 +575,7 @@ export default function Home() {
                       <td className="py-2 pr-2">{c.telefone || "-"}</td>
                       <td className="py-2 pr-2">{c.area_interesse || "-"}</td>
                       <td className="py-2 pr-2">{c.data_cadastro}</td>
-                      {search.trim().length === 0 && (
+                      {search.trim().length === 0 && !dialogOpen && dialogResults.length === 0 && (
                         <td className="py-2 pr-2">
                           <div className="flex items-center gap-2">
                             <button
@@ -617,27 +617,35 @@ export default function Home() {
                 type="button"
                 onClick={async () => {
                   try {
-                    // Limpa o formulário da tela sempre ao clicar
-                    setForm(initialForm);
-                    setEditingId(null);
-                    setErrors({});
-                    // Limpa campos de busca e e-mail da seção de limpeza
-                    setSearch("");
-                    setDialogResults([]);
-                    setClearEmail("");
-                    if (!emailRegex.test(clearEmail.trim())) {
+                    // Validação do e-mail antes de qualquer ação
+                    const email = clearEmail.trim();
+                    if (!emailRegex.test(email)) {
                       showToast({ type: "error", message: "Informe um e-mail válido" });
                       return;
                     }
-                    // Exibe caixa de diálogo imediatamente ao clicar
+                    // Limpa rapidamente estados locais
+                    setForm(initialForm);
+                    setEditingId(null);
+                    setErrors({});
+                    setSearch("");
+                    setDialogResults([]);
+                    setClearEmail("");
+                    // Mostra confirmação de limpeza
+                    setDialogTitle("Limpeza");
                     setDialogMessage("Apagado com sucesso");
                     setDialogOpen(true);
                     // Dispara webhook de limpar com o e-mail informado
-                    const payload = { email: clearEmail.trim(), timestamp: new Date().toISOString() };
+                    const payload = { email, timestamp: new Date().toISOString() };
                     const resp = await triggerWebhook("Limpar", undefined, payload);
                     if (resp && !resp.ok) {
                       showToast({ type: "error", message: resp?.error || "Falha ao solicitar limpeza" });
                     }
+                    // Recarrega a página para garantir estado limpo geral
+                    setTimeout(() => {
+                      if (typeof window !== "undefined") {
+                        window.location.reload();
+                      }
+                    }, 1000);
                   } catch (err: any) {
                     showToast({ type: "error", message: err?.message || "Erro ao limpar" });
                   }
