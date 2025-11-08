@@ -64,3 +64,55 @@
     border-color: rgba(0, 0, 0, 0.12);
   }
 }
+
+/* Paleta escura refinada (preto e cinza com diferenciação) */
+.dark {
+  --bg: #0b0c0f;          /* fundo principal (quase preto) */
+  --surface-1: #111317;   /* cards/sections */
+  --surface-2: #15181e;   /* inputs/elementos de interação */
+  --surface-3: #1a1e25;   /* hover/estado ativo */
+  --text-primary: #e9edf2; /* texto principal */
+  --text-secondary: #b7bbc4; /* texto secundário */
+  --border-soft: #2a2f3a; /* borda leve */
+  --border-strong: #3a404c; /* borda mais marcada */
+}
+
+/* Aplicação do fundo e texto base */
+.dark body {
+  background-color: var(--bg);
+  color: var(--text-primary);
+}
+
+/* Ajuste de backgrounds usados na UI */
+.dark .bg-zinc-950 { background-color: var(--surface-1) !important; }
+.dark .bg-zinc-900 { background-color: var(--surface-2) !important; }
+.dark .hover\:bg-zinc-900:hover { background-color: var(--surface-3) !important; }
+
+/* Texto e bordas para melhor contraste */
+.dark .text-white { color: var(--text-primary) !important; }
+.dark .text-zinc-300 { color: var(--text-secondary) !important; }
+.dark .border { border-color: var(--border-soft) !important; }
+.dark .border-zinc-800 { border-color: var(--border-strong) !important; }
+.dark tr.border-b { border-color: var(--border-soft) !important; }
+
+/* Inputs e selects mais distinguíveis */
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: var(--surface-2);
+  border-color: var(--border-soft);
+  color: var(--text-primary);
+}
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--text-secondary);
+}
+
+/* Botões */
+.dark button.bg-black {
+  background-color: #0f1216 !important; /* preto ligeiramente elevado */
+  border-color: var(--border-strong) !important;
+}
+.dark button.bg-black:hover {
+  background-color: var(--surface-3) !important;
+}
