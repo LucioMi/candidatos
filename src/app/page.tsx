@@ -564,13 +564,7 @@ export default function Home() {
 
           <div className="mt-4 overflow-x-auto">
             {listFiltered.length === 0 ? (
-              <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 text-center">
-                <div className="mx-auto h-10 w-10 rounded-full bg-[var(--accent)]/20 flex items-center justify-center text-[var(--accent)]">★</div>
-                <p className="mt-2 text-[var(--text-2)]">Sem registros</p>
-                <button className="mt-3 h-11 px-5 rounded-xl border border-[var(--border)] text-[var(--text)] hover:bg-[var(--muted)] transition" title="Importar CSV">
-                  Importar CSV
-                </button>
-              </div>
+              <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 min-h-[8rem]" />
             ) : (
               <table className="min-w-full text-sm">
                 <thead className="sticky top-0 bg-[var(--card)]">
