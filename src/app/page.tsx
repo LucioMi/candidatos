@@ -341,12 +341,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
-      <main className="max-w-3xl mx-auto p-6 space-y-8 font-sans">
-        <div className="flex items-center justify-start">
-          <div>
-            <h1 className="text-2xl font-semibold text-black dark:text-white">Cadastro de Candidatos</h1>
-            <p className="text-zinc-600 dark:text-zinc-400 mt-1">Insira, visualize e exclua candidatos.</p>
-          </div>
+      <main className="max-w-[1040px] mx-auto p-8 space-y-8">
+        <div className="rounded-2xl p-8 hero-gradient">
+          <h1 className="heading text-4xl font-bold tracking-tight text-[var(--text)]">Cadastro de Candidatos</h1>
+          <p className="text-[var(--text-2)] mt-2">Insira, visualize e exclua candidatos.</p>
         </div>
         {dialogOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -395,21 +393,26 @@ export default function Home() {
             </div>
           </div>
         )}
-        <section className="rounded-2xl shadow border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6">
+        <div className="grid gap-6 lg:grid-cols-2">
+        <section className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-xl/20">
 
           {toast && (
-            <div
-              className={`mt-4 rounded-lg p-3 text-sm ${
-                toast.type === "success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-              }`}
-            >
-              {toast.message}
+            <div className="fixed top-4 right-4 z-50">
+              <div
+                className={`rounded-xl px-4 py-2 text-sm ${
+                  toast.type === "success"
+                    ? "bg-green-600/20 text-green-300 border border-green-700/40"
+                    : "bg-red-600/20 text-red-300 border border-red-700/40"
+                }`}
+              >
+                {toast.message}
+              </div>
             </div>
           )}
 
           <form onSubmit={onSubmit} className="mt-6 grid grid-cols-1 gap-4">
             <div>
-              <label className="block text-sm font-medium text-zinc-700">Nome completo*</label>
+              <label className="block text-sm font-medium text-[var(--text-2)] mb-1">Nome completo*</label>
               <input
                 type="text"
                 required
@@ -417,46 +420,46 @@ export default function Home() {
                 placeholder="Nome completo"
                 value={form.nome_completo}
                 onChange={(e) => onChange("nome_completo", e.target.value)}
-                className="mt-1 w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white dark:bg-zinc-900 dark:text-white"
+                className="w-full h-11 rounded-xl bg-[var(--muted)] text-[var(--text)] border border-[var(--border)] px-4 placeholder:text-[color-mix(in oklab, var(--text-2) 70%, transparent)] focus:ring-2 focus:ring-[color-mix(in oklab,var(--primary) 40%, transparent)] focus:border-transparent outline-none"
               />
               {errors.nome_completo && (
-                <p className="mt-1 text-xs text-red-600">{errors.nome_completo}</p>
+                <p className="mt-1 text-xs text-[#ffb4b4]">{errors.nome_completo}</p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-zinc-700">E-mail*</label>
+              <label className="block text-sm font-medium text-[var(--text-2)] mb-1">E-mail*</label>
               <input
                 type="email"
                 required
                 placeholder="E-mail"
                 value={form.email}
                 onChange={(e) => onChange("email", e.target.value)}
-                className="mt-1 w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white dark:bg-zinc-900 dark:text-white"
+                className="w-full h-11 rounded-xl bg-[var(--muted)] text-[var(--text)] border border-[var(--border)] px-4 placeholder:text-[color-mix(in oklab, var(--text-2) 70%, transparent)] focus:ring-2 focus:ring-[color-mix(in oklab,var(--primary) 40%, transparent)] focus:border-transparent outline-none"
               />
               {errors.email && (
-                <p className="mt-1 text-xs text-red-600">{errors.email}</p>
+                <p className="mt-1 text-xs text-[#ffb4b4]">{errors.email}</p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-zinc-700">Telefone</label>
+              <label className="block text-sm font-medium text-[var(--text-2)] mb-1">Telefone</label>
               <input
                 type="text"
                 placeholder="Telefone"
                 value={form.telefone}
                 onChange={(e) => onChange("telefone", formatPhoneBR(e.target.value))}
-                className="mt-1 w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white dark:bg-zinc-900 dark:text-white"
+                className="w-full h-11 rounded-xl bg-[var(--muted)] text-[var(--text)] border border-[var(--border)] px-4 placeholder:text-[color-mix(in oklab, var(--text-2) 70%, transparent)] focus:ring-2 focus:ring-[color-mix(in oklab,var(--primary) 40%, transparent)] focus:border-transparent outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-zinc-700">Área de interesse*</label>
+              <label className="block text-sm font-medium text-[var(--text-2)] mb-1">Área de interesse*</label>
               <select
                 required
                 value={form.area_interesse}
                 onChange={(e) => onChange("area_interesse", e.target.value)}
-                className="mt-1 w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white dark:bg-zinc-900 dark:text-white"
+                className="w-full h-11 rounded-xl bg-[var(--muted)] text-[var(--text)] border border-[var(--border)] px-4 focus:ring-2 focus:ring-[color-mix(in oklab,var(--primary) 40%, transparent)] focus:border-transparent outline-none"
               >
                 <option value="">Selecione...</option>
                 <option value="Marketing">Marketing</option>
@@ -465,7 +468,7 @@ export default function Home() {
                 <option value="Operações">Operações</option>
               </select>
               {errors.area_interesse && (
-                <p className="mt-1 text-xs text-red-600">{errors.area_interesse}</p>
+                <p className="mt-1 text-xs text-[#ffb4b4]">{errors.area_interesse}</p>
               )}
             </div>
 
@@ -489,20 +492,20 @@ export default function Home() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`rounded-lg px-4 py-2 font-medium text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black dark:focus-visible:ring-white border ${
-                  loading ? "bg-zinc-800/70 border-zinc-800" : "bg-black hover:bg-zinc-900 border-black dark:border-white"
-                } disabled:cursor-not-allowed`}
+                className={`h-11 px-5 rounded-xl bg-[var(--primary)] text-white font-medium hover:brightness-105 active:brightness-95 focus:ring-2 focus:ring-[var(--primary)]/40 transition disabled:cursor-not-allowed ${
+                  loading ? "opacity-70" : ""
+                }`}
               >
                 {loading ? (editingId ? "Salvando..." : "Cadastrando...") : "Cadastrar / Editar"}
               </button>
             </div>
-            <p className="text-xs text-zinc-600 mt-2">
+            <p className="text-xs text-[var(--text-2)] mt-2">
               O e-mail é usado para fazer o match; ele funciona como um ID.
             </p>
           </form>
         </section>
 
-        <section className="rounded-2xl shadow border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6">
+        <section className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-xl/20">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <input
               type="text"
@@ -511,7 +514,7 @@ export default function Home() {
               onChange={(e) => setSearch(e.target.value)}
               name="searchEmail"
               autoComplete="off"
-              className="w-full sm:w-2/3 rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white dark:bg-zinc-900 dark:text-white"
+              className="w-full sm:w-2/3 h-11 rounded-xl bg-[var(--muted)] text-[var(--text)] border border-[var(--border)] px-4 placeholder:text-[color-mix(in oklab, var(--text-2) 70%, transparent)] focus:ring-2 focus:ring-[color-mix(in oklab,var(--primary) 40%, transparent)] focus:border-transparent outline-none"
             />
             <div className="flex items-center gap-2">
               <button
@@ -552,7 +555,7 @@ export default function Home() {
                   }
                 }}
                 disabled={loadingList}
-                className="rounded-lg px-4 py-2 font-medium border transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900 disabled:cursor-not-allowed"
+                className="h-11 px-5 rounded-xl border border-[var(--border)] text-[var(--text)] hover:bg-[var(--muted)] transition disabled:cursor-not-allowed"
               >
                 {loadingList ? "Buscando..." : "Buscar"}
               </button>
@@ -561,11 +564,17 @@ export default function Home() {
 
           <div className="mt-4 overflow-x-auto">
             {listFiltered.length === 0 ? (
-              <p className="text-zinc-600">Sem registros ainda.</p>
+              <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 text-center">
+                <div className="mx-auto h-10 w-10 rounded-full bg-[var(--accent)]/20 flex items-center justify-center text-[var(--accent)]">★</div>
+                <p className="mt-2 text-[var(--text-2)]">Sem registros</p>
+                <button className="mt-3 h-11 px-5 rounded-xl border border-[var(--border)] text-[var(--text)] hover:bg-[var(--muted)] transition" title="Importar CSV">
+                  Importar CSV
+                </button>
+              </div>
             ) : (
-              <table className="min-w-full text-left text-sm">
-                <thead>
-                  <tr className="border-b">
+              <table className="min-w-full text-sm">
+                <thead className="sticky top-0 bg-[var(--card)]">
+                  <tr className="text-left text-[var(--text-2)] border-b border-[var(--border)]">
                     <th className="py-2">Nome</th>
                     <th className="py-2">E-mail</th>
                     <th className="py-2">Telefone</th>
@@ -576,9 +585,9 @@ export default function Home() {
                     )}
                   </tr>
                 </thead>
-              <tbody>
+              <tbody className="divide-y divide-[var(--border)]">
                   {listFiltered.map((c) => (
-                    <tr key={c.id || `${c.email}-${c.nome_completo}`} className="border-b transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900">
+                    <tr key={c.id || `${c.email}-${c.nome_completo}`} className="even:bg-[var(--card)] transition-colors hover:bg-[var(--muted)]">
                       <td className="py-2 pr-2">{c.nome_completo || "-"}</td>
                       <td className="py-2 pr-2">{c.email || "-"}</td>
                       <td className="py-2 pr-2">{c.telefone || "-"}</td>
@@ -588,14 +597,16 @@ export default function Home() {
                         <td className="py-2 pr-2">
                           <div className="flex items-center gap-2">
                             <button
-                              className="rounded-md border px-2 py-1 text-xs transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                              className="rounded-md border border-[var(--border)] px-2 py-1 text-xs transition-colors hover:bg-[var(--muted)]"
                               onClick={() => startEdit(c)}
+                              title="Editar"
                             >
                               Editar
                             </button>
                             <button
                               className="rounded-md bg-red-600 text-white px-2 py-1 text-xs transition-colors hover:bg-red-700"
                               onClick={() => setConfirmDeleteId(c.id || "")}
+                              title="Excluir"
                             >
                               Excluir
                             </button>
@@ -609,8 +620,9 @@ export default function Home() {
             )}
           </div>
         </section>
+        </div>
 
-        <section className="rounded-2xl shadow border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6">
+        <section className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-xl/20">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <input
               type="email"
@@ -619,7 +631,7 @@ export default function Home() {
               onChange={(e) => setClearEmail(e.target.value)}
               name="clearEmail"
               autoComplete="email"
-              className="w-full sm:w-2/3 rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white dark:bg-zinc-900 dark:text-white"
+              className="w-full sm:w-2/3 h-11 rounded-xl bg-[var(--muted)] text-[var(--text)] border border-[var(--border)] px-4 placeholder:text-[color-mix(in oklab, var(--text-2) 70%, transparent)] focus:ring-2 focus:ring-[color-mix(in oklab,var(--primary) 40%, transparent)] focus:border-transparent outline-none"
             />
             <div className="flex items-center gap-2">
               <button
@@ -659,7 +671,7 @@ export default function Home() {
                     showToast({ type: "error", message: err?.message || "Erro ao limpar" });
                   }
                 }}
-                className="rounded-lg px-4 py-2 font-medium border transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                className="h-11 px-5 rounded-xl border border-[var(--border)] text-[var(--text)] hover:bg-[var(--muted)] transition"
               >
                 Limpar
               </button>
@@ -669,19 +681,19 @@ export default function Home() {
 
         {confirmDeleteId && (
           <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4">
-            <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-zinc-950 p-6 shadow-lg">
+            <div className="w-full max-w-sm rounded-2xl bg-[var(--card)] p-6 shadow-xl/20 border border-[var(--border)]">
               <h3 className="text-lg font-semibold">Confirmar exclusão</h3>
-              <p className="text-sm text-zinc-600 mt-1">Tem certeza que deseja excluir este candidato?</p>
+              <p className="text-sm text-[var(--text-2)] mt-1">Tem certeza que deseja excluir este candidato?</p>
               <div className="mt-4 flex items-center gap-3">
                 <button
                   onClick={confirmRemove}
-                  className="rounded-lg px-4 py-2 font-medium bg-black text-white transition-colors hover:bg-zinc-900"
+                  className="h-11 px-5 rounded-xl bg-[var(--primary)] text-white font-medium hover:brightness-105 active:brightness-95 focus:ring-2 focus:ring-[var(--primary)]/40 transition"
                 >
                   {loading ? "Excluindo..." : "Excluir"}
                 </button>
                 <button
                   onClick={() => setConfirmDeleteId(null)}
-                  className="rounded-lg px-4 py-2 font-medium border transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                  className="h-11 px-5 rounded-xl border border-[var(--border)] text-[var(--text)] hover:bg-[var(--muted)] transition"
                 >
                   Cancelar
                 </button>
