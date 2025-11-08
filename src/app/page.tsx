@@ -555,7 +555,7 @@ export default function Home() {
                   }
                 }}
                 disabled={loadingList}
-                className="h-11 px-5 rounded-xl border border-[var(--border)] text-[var(--text)] hover:bg-[var(--muted)] transition disabled:cursor-not-allowed"
+                className="h-11 px-5 rounded-xl bg-[var(--primary)] text-white font-medium hover:brightness-105 active:brightness-95 focus:ring-2 focus:ring-[var(--primary)]/40 transition disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {loadingList ? "Buscando..." : "Buscar"}
               </button>
@@ -665,7 +665,7 @@ export default function Home() {
                     showToast({ type: "error", message: err?.message || "Erro ao limpar" });
                   }
                 }}
-                className="h-11 px-5 rounded-xl border border-[var(--border)] text-[var(--text)] hover:bg-[var(--muted)] transition"
+                className="h-11 px-5 rounded-xl bg-[var(--primary)] text-white font-medium hover:brightness-105 active:brightness-95 focus:ring-2 focus:ring-[var(--primary)]/40 transition"
               >
                 Limpar
               </button>
